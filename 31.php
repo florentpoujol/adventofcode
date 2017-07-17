@@ -1,6 +1,6 @@
 <?php
 
-$resource = fopen("3_input.php", "r");
+$resource = fopen("30_input.txt", "r");
 $line = "";
 $sizes = [];
 $count = 0;
