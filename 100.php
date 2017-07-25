@@ -106,7 +106,8 @@ do {
             var_dump($values);
             if (in_array(61, $values) && in_array(17, $values)) {
                 $searchedBot = $botId;
-                var_dump("searched bot $botId");
+                $processedInstructions = 0;
+                break;
             }
             processInstructions($botId, $valuesPerBot, $botsGive);
         }
