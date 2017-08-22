@@ -3,7 +3,7 @@
 $res = fopen("100_input.txt", "r");
 
 $valuesPerBot = []; // values is the number each bot holds, sorted
-$botsGive = []; // values are ["low" => [ "value" => {value}, "to" => {bot or ouput nummber}], "high" => ...]
+$instructionsPerBot = []; // key = bot id    values are ["low" => [ "value" => {value}, "to" => {bot or ouput nummber}], "high" => ...]
 
 
 while (($line = fgets($res)) !== false) {
@@ -14,11 +14,11 @@ while (($line = fgets($res)) !== false) {
     if (preg_match($p, $line, $matches) === 1) {
         $botId = (int)$matches[1];
 
-        if (isset($botsGive[$botId])) {
+        if (isset($instructionsPerBot[$botId])) {
             var_dump("error, instruction already exists for bot $botId");
         }
 
-        $botsGive[$botId] = [
+        $instructionsPerBot[$botId] = [
             "low" => [
                 "to" => $matches[2],
                 "toId" => (int)$matches[3]
@@ -47,19 +47,19 @@ while (($line = fgets($res)) !== false) {
 
 ksort($valuesPerBot);
 // var_dump($valuesPerBot);
-ksort($botsGive);
-// var_dump($botsGive);
+ksort($instructionsPerBot);
+// var_dump($instructionsPerBot);
 
 
-function processInstructions($botId, &$valuesPerBot, &$botsGive)
+function processInstructions($botId, &$valuesPerBot, &$instructionsPerBot)
 {
     $botValues = $valuesPerBot[$botId];
-    if (! isset($botsGive[$botId])) {
+    if (! isset($instructionsPerBot[$botId])) {
         $valuesPerBot[$botId] = []; // no instructions for that bot, no need to keep the values
         return;
     }
 
-    $instr = $botsGive[$botId];
+    $instr = $instructionsPerBot[$botId];
 
     $botGive = $instr["low"];
     $receiver = []; 
@@ -89,34 +89,36 @@ function processInstructions($botId, &$valuesPerBot, &$botsGive)
     sort($receiver);
     unset($receiver);
 
-    $valuesPerBot[$botId] = []; // set empty array since this bot has given all its values
+    unset($valuesPerBot[$botId]); // set empty array since this bot has given all its values
+    unset($instructionsPerBot[$botId]);
 }
 
 $searchedBot = -1;
+$outputs = 0;
 $loops = 0;
+
 do {
-    $processedInstructions = 0;
+    // $processedInstructions = 0;
                                                                              
     $temp = $valuesPerBot;
     foreach ($temp as $botId => $values) {
         if (count($values) === 2) {
-            $processedInstructions++;
+            // var_dump("process instructions for bot $botId");
+            // var_dump($values);
 
-            var_dump("process instructions for bot $botId");
-            var_dump($values);
             if (in_array(61, $values) && in_array(17, $values)) {
                 $searchedBot = $botId;
-                $processedInstructions = 0;
-                break;
             }
-            processInstructions($botId, $valuesPerBot, $botsGive);
+
+            processInstructions($botId, $valuesPerBot, $instructionsPerBot, $totalOutput);
         }
     }
 }
-while ($processedInstructions > 0 && $loops++ < 9999);
+while (count($instructionsPerBot) > 0 && $loops++ < 9999);
 
 if ($loops >= 9999) {
     var_dump("loop existed because too big");
 }
 
 echo "day 100.1: $searchedBot  <br>";
+// completely not sure what to do for day 2 here...
