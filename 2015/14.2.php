@@ -1,4 +1,5 @@
 <?php
+// http://adventofcode.com/2015/day/14
 
 $resource = fopen("14_input.txt", "r");
 
