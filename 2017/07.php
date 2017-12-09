@@ -22,44 +22,66 @@ class Program
     {
         $totalWeight = $this->weight;
         $weightsPerChildName = [];
+        $firstWeight = -1;
+        $firstName = "";
+        $otherWeight = -1;
+        $otherName = "";
+        $unbalancedWeight = -1;
+        $balancedWeight = -1;
+        $balancedName = "";
+        $unbalancedName = "";
+
         foreach ($this->children as $child) {
             $weight = $child->getTotalWeight();
             $weightsPerChildName[$child->name] = $weight;
             $totalWeight += $weight;
-        }
 
-        // check if balanced
-        /*$countPerWeights = array_count_values($weightsPerChildName);
-        if (count($countPerWeights) === 2) { // there is only one unbalanced program, so in that case there is only two different weights
-            $weights = []; // first entry is the unbalanced one, value is name and weight
-            foreach ($weightsPerChildName as $name => $weight) {
-                if (empty($weights)) {
-                    $weights[] = [
-                        "name" => $name,
-                        "weight" => $weight,
-                    ];
-                } else {
-                    if ($weight !== $weights[0]["weight"]) {
-                        $weights[] = [
-                            "name" => $name,
-                            "weight" => $weight,
-                        ];
-                    }
-                    if ($weight === $weights[0]["weight"]) {
-                        // weight 1 is the unbalanced one
-
-                    }
+            if ($firstWeight === -1) {
+                $firstWeight = $weight;
+                $firstName = $child->name;
+            } elseif ($otherWeight === -1) {
+                if ($weight !== $firstWeight) {
+                    $otherWeight = $weight;
+                    $otherName = $child->name;
                 }
+            } else {
+                // so this is a third (at least) weight
+                // which is equal to either first or other weight
+                // because we know that there is only a single unbalanced program
+
+                if ($weight === $firstWeight) {
+                    $unbalancedWeight = $otherWeight;
+                    $unbalancedName = $otherName;
+                } elseif ($weight === $otherWeight) {
+                    $unbalancedWeight = $firstWeight;
+                    $unbalancedName = $firstName;
+                }
+                $balancedWeight = $weight;
+                $balancedName = $child->name;
             }
-
-            $uniqueWeightsPerChildName = array_unique($weightsPerChildName);
-            $childNamePerWeight = array_flip($uniqueWeightsPerChildName);
-
-            ksort($countPerWeights); // sort by weights
-            $counts = array_values($countPerWeights);
-            $unbalancedName = $childNamePerWeight[$counts[0]];
         }
-        */
+
+        if ($otherName !== "" && $unbalancedName === "") {
+            // we registered 2 different weights
+            // but the unbalanced variables are not set.
+            // that's because otherWeight was the weight of the last children
+            // which is also the unbalanced one
+            $unbalancedWeight = $otherWeight;
+            $unbalancedName = $otherName;
+            $balancedWeight = $firstWeight;
+            $balancedName = $firstName;
+        }
+
+        if ($unbalancedName !== "") {
+            // we need the new weight of the unbalanced program
+            // $balancedWeight is the total balanced weight
+            $diff = $balancedWeight - $unbalancedWeight;
+            global $programsPerName;
+            var_dump($balancedWeight, $unbalancedWeight, $unbalancedName, $diff, $programsPerName[$unbalancedName]->weight);
+            $GLOBALS["balancedWeight"] = $programsPerName[$unbalancedName]->weight + $diff;
+            // super hacky AND doesn't work...
+        }
+
         return $totalWeight;
     }
 }
@@ -113,3 +135,5 @@ echo "Day 7.1: $rootName\n";
 $root = $programsPerName[$rootName];
 
 $root->getTotalWeight();
+$balancedWeight = $GLOBALS["balancedWeight"] ?? "error";
+echo "Day 7.2: $balancedWeight\n";
