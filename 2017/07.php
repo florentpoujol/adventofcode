@@ -21,15 +21,15 @@ class Program
     public function getTotalWeight(): int
     {
         $totalWeight = $this->weight;
+
         $weightsPerChildName = [];
-        $firstWeight = -1;
-        $firstName = "";
-        $otherWeight = -1;
-        $otherName = "";
+        $firstWeight = -1; // weight and name of the first child
+        $firstProgram = "";
+        $otherWeight = -1; // weight and name of the child different than firstWeight
+        $otherProgram = "";
         $unbalancedWeight = -1;
+        $unbalancedProgram = "";
         $balancedWeight = -1;
-        $balancedName = "";
-        $unbalancedName = "";
 
         foreach ($this->children as $child) {
             $weight = $child->getTotalWeight();
@@ -38,48 +38,54 @@ class Program
 
             if ($firstWeight === -1) {
                 $firstWeight = $weight;
-                $firstName = $child->name;
+                $firstProgram = $child->name;
             } elseif ($otherWeight === -1) {
                 if ($weight !== $firstWeight) {
                     $otherWeight = $weight;
-                    $otherName = $child->name;
+                    $otherProgram = $child->name;
                 }
             } else {
-                // so this is a third (at least) weight
-                // which is equal to either first or other weight
-                // because we know that there is only a single unbalanced program
+                // - this is the third (at least) child of that program
+                // - firstWeight and otherWeight are set
+                // - this child's weight is equal to either first or other weight
+                //   because we know that there is only a single unbalanced program
+                // - I can only assume that the unbalanced program has at least two siblings
+                //   otherwise I could tell which weight is the unbalanced one
 
                 if ($weight === $firstWeight) {
                     $unbalancedWeight = $otherWeight;
-                    $unbalancedName = $otherName;
+                    $unbalancedProgram = $otherProgram;
                 } elseif ($weight === $otherWeight) {
                     $unbalancedWeight = $firstWeight;
-                    $unbalancedName = $firstName;
+                    $unbalancedProgram = $firstProgram;
+                } else {
+                    exit("error, weight should be equal to firstWeight or otherWeight");
                 }
                 $balancedWeight = $weight;
-                $balancedName = $child->name;
+
+                // this should not change things that this else block can be called
+                // with every subsequent children without changing the value of unbalancedWeight
             }
         }
 
-        if ($otherName !== "" && $unbalancedName === "") {
-            // we registered 2 different weights
+        if (count($this->children) >= 3 && $otherProgram !== "" && $unbalancedProgram === "") {
+            // We registered 2 different weights (first and other)
             // but the unbalanced variables are not set.
-            // that's because otherWeight was the weight of the last children
-            // which is also the unbalanced one
+            // That's because otherWeight was the weight of the last children
+            // which is thus also must be the unbalanced one.
             $unbalancedWeight = $otherWeight;
-            $unbalancedName = $otherName;
+            $unbalancedProgram = $otherProgram;
             $balancedWeight = $firstWeight;
-            $balancedName = $firstName;
         }
 
-        if ($unbalancedName !== "") {
+        if ($unbalancedProgram !== "") {
             // we need the new weight of the unbalanced program
-            // $balancedWeight is the total balanced weight
-            $diff = $balancedWeight - $unbalancedWeight;
+            $diff = $balancedWeight - $unbalancedWeight; // bot weight are the total weight
             global $programsPerName;
-            var_dump($balancedWeight, $unbalancedWeight, $unbalancedName, $diff, $programsPerName[$unbalancedName]->weight);
-            $GLOBALS["balancedWeight"] = $programsPerName[$unbalancedName]->weight + $diff;
-            // super hacky AND doesn't work...
+            // var_dump($balancedWeight, $unbalancedWeight, $unbalancedProgram, $diff, $programsPerName[$unbalancedProgram]->weight);
+            $GLOBALS["balancedWeight"] = $programsPerName[$unbalancedProgram]->weight + $diff;
+
+            $totalWeight += $diff; // fiw this program's weight so that it's parent is not itself considered unbalanced
         }
 
         return $totalWeight;
@@ -91,7 +97,7 @@ $programsPerName = [];
 
 
 $resource = fopen("07_input.txt", "r");
-//$resource = fopen("07_input_test.txt", "r");
+// $resource = fopen("07_input_test.txt", "r");
 
 while (($line = fgets($resource)) !== false) {
     $matches = [];
@@ -128,12 +134,11 @@ echo "Day 7.1: $rootName\n";
 
 // day 7.2
 // find the first program for which its children are unbalanced
-// use BFS from a leaf
-
-// go from root, explore every children recursively
 
 $root = $programsPerName[$rootName];
 
 $root->getTotalWeight();
 $balancedWeight = $GLOBALS["balancedWeight"] ?? "error";
 echo "Day 7.2: $balancedWeight\n";
+
+// 1614 too hight (dqwocyn, child of tylelk)
