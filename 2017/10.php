@@ -60,41 +60,55 @@ echo "Day 10.1: $value\n"; // 37442 too high
 
 // day 2
 
-$input = str_split("70,66,255,2,48,0,54,48,80,141,244,254,160,108,1,41");
-$lengths = [];
-foreach ($input as $char) {
-    $lengths[] = ord($char);
-}
-$lengths = array_merge($lengths, [17,31,73,47,23]);
-
-$currentPosition = 0;
-$skipSize = 0;
-$spareHash = range(0, 255);
-for ($i = 1; $i <= 64; $i++) {
-    $spareHash = knot($spareHash, $lengths);
-}
-
-$temp = 0;
-$denseHash = [];
-foreach ($spareHash as $id => $value) {
-    if ($id === 0) {
-        $temp = $value;
-    } elseif ($id % 16 === 0) {
-        $denseHash[] = $temp;
-        $temp = $value;
-    } else {
-        $temp ^= $value;
+function knotHash(string $input): string
+{
+    $input = str_split($input);
+    $lengths = [];
+    foreach ($input as $char) {
+        $lengths[] = ord($char);
     }
-}
-$denseHash[] = $temp;
+    $lengths = array_merge($lengths, [17,31,73,47,23]);
 
-$hash = "";
-foreach ($denseHash as $num) {
-    $hex = dechex($num);
-    if (strlen($hex) === 1) {
-        $hex = "0$hex";
+    global $currentPosition, $skipSize;
+    $currentPosition = 0;
+    $skipSize = 0;
+    $spareHash = range(0, 255);
+    for ($i = 1; $i <= 64; $i++) {
+        $spareHash = knot($spareHash, $lengths);
     }
-    $hash .= $hex;
+
+    $temp = 0;
+    $denseHash = [];
+    foreach ($spareHash as $id => $value) {
+        if ($id === 0) {
+            $temp = $value;
+        } elseif ($id % 16 === 0) {
+            $denseHash[] = $temp;
+            $temp = $value;
+        } else {
+            $temp ^= $value;
+        }
+    }
+    $denseHash[] = $temp;
+
+    $hash = "";
+    foreach ($denseHash as $num) {
+        $hex = dechex($num);
+        if (strlen($hex) === 1) {
+            $hex = "0$hex";
+        }
+        $hash .= $hex;
+    }
+
+    return $hash;
 }
+
+$input = "70,66,255,2,48,0,54,48,80,141,244,254,160,108,1,41";
+// tests
+//$input = "";
+//$input = "AoC 2017";
+//$input = "1,2,3";
+//$input = "1,2,4";
+$hash = knotHash($input);
 
 echo "Day 10.2: $hash\n";
