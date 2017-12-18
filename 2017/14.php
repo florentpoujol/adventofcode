@@ -1,4 +1,5 @@
 <?php
+// http://adventofcode.com/2017/day/14
 
 ob_start();
 require_once "10.php"; // for function knotHash()
