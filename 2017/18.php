@@ -55,8 +55,10 @@ function getRegisterValue($nameOrValue, $pId = null)
 $recoverFreq = -987;
 $instrCount = count($instructions);
 for ($i = 0; $i >= 0 && $i < $instrCount; $i++) {
-    list("name" => $name, "op1" => $op1, "op2" => $op2) = $instructions[$i];
-
+    // list("name" => $name, "op1" => $op1, "op2" => $op2) = $instructions[$i]; // using => require PHP7.1, but is not specified in the list() manual...
+    $name = $instructions[$i]["name"];
+    $op1 = $instructions[$i]["op1"];
+    $op2 = $instructions[$i]["op2"];
     switch ($name) {
         case "snd":
             $lastFrequency = getRegisterValue($op1);
@@ -142,8 +144,9 @@ function run(int $pId, int $startInstrId)
     }
 
     for ($i = $startInstrId; $i >= 0 && $i < $instrCount; $i++) {
-        list("name" => $name, "op1" => $op1, "op2" => $op2) = $instructions[$i];
-
+        $name = $instructions[$i]["name"];
+        $op1 = $instructions[$i]["op1"];
+        $op2 = $instructions[$i]["op2"];
         switch ($name) {
 
             case "snd":
