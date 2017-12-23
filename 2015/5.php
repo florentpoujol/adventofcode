@@ -1,4 +1,5 @@
 <?php
+// http://adventofcode.com/2015/day/5
 
 $resource = fopen("5_input.txt", "r");
 
@@ -7,7 +8,8 @@ $niceCount2 = 0;
 
 function hasLetterTwiceInARow($str) 
 {
-    for ($i=0; $i < strlen($str)-1; $i++) { 
+    $count = strlen($str) - 1;
+    for ($i = 0; $i < $count; $i++) {
         if ($str[$i] === $str[$i+1]) {
             return true;
         }
@@ -17,15 +19,13 @@ function hasLetterTwiceInARow($str)
 
 function hasPairs($str, $v = false)
 {
-    for ($i=0; $i < strlen($str)-1; $i++) {
+    $count = strlen($str) - 1;
+    for ($i = 0; $i < $count; $i++) {
         $chunk = $str[$i] . $str[$i+1];
         
-        $pos = strpos( substr($str, $i+2), $chunk);
-        
+        $pos = strpos(substr($str, $i+2), $chunk);
         if ($pos !== false) {
-            if ($v)
-                return $pos;
-            else return true;
+            return $v ? $pos : true;
         }
     }
     return false;
@@ -33,8 +33,9 @@ function hasPairs($str, $v = false)
 
 function hasRepeatingLetterWithAnotherInBetween($str) 
 {
-    for ($i=0; $i < strlen($str)-2; $i++) { 
-        if ($str[$i] === $str[$i+2] && $str[$i] !== $str[$i+1]) {
+    $count = strlen($str) - 2;
+    for ($i = 0; $i < $count; $i++) {
+        if ($str[$i] === $str[$i+2]) {
             return true;
         }
     }
@@ -42,17 +43,13 @@ function hasRepeatingLetterWithAnotherInBetween($str)
 }
 
 while (($line = fgets($resource)) !== false) {
-    $line = trim($line);
-
     if (
         preg_match("/.*[aeiou].*[aeiou].*[aeiou].*/", $line) === 1 &&
         hasLetterTwiceInARow($line) &&
-        (
-            strpos($line, "ab") === false &&
-            strpos($line, "cd") === false &&
-            strpos($line, "pq") === false &&
-            strpos($line, "xy") === false
-        )
+        strpos($line, "ab") === false &&
+        strpos($line, "cd") === false &&
+        strpos($line, "pq") === false &&
+        strpos($line, "xy") === false
     ) {
         $niceCount++;
     }
@@ -63,11 +60,7 @@ while (($line = fgets($resource)) !== false) {
     ) {
         $niceCount2++;
     }
-
-    if (hasPairs($line) !== hasPairs2($line)) {
-        var_dump("wrong value", hasPairs($line, true), hasPairs2($line, true), $line);
-    }
 }
 
 echo "day 5.1: $niceCount <br>";
-echo "day 5.2: $niceCount2 <br>"; // the aswer is 55 but my code gives me 52...
+echo "day 5.2: $niceCount2 <br>";
