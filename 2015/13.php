@@ -1,4 +1,5 @@
 <?php
+// http://adventofcode.com/2015/day/13
 
 $resource = fopen("13_input.txt", "r");
 
@@ -6,6 +7,15 @@ $resource = fopen("13_input.txt", "r");
 // people are nodes, every other person is a neighbour
 // everyone is neighbour to everyone (except itself)
 // links between people are weighted (thr sum of how they feel about each other)
+
+// systematically explore every paths from each person
+// take in turn each person
+// then find its best neighbour (highest weight link leading to non-visited node)
+// explore similarly that node
+
+// consider the graph as a tree with each person in turn as the root
+// then explore depth-first, markings nodes as visited
+// until the chain is 8 person and all the nodes are visited
 
 class Node
 {
@@ -53,6 +63,7 @@ class Link
 
 $nodesPerName = [];
 $nodes = [];
+$links = [];
 
 while (($line = fgets($resource)) !== false) {
     $line = trim($line);
@@ -85,35 +96,26 @@ while (($line = fgets($resource)) !== false) {
     $link = $node->getLinkTo($neighbourName);
     if ($link === null) {
         $link = new Link($node, $neighbourNode);
+        $links[] = $link;
     }
 
     $gain = (int)$matches[3];
     if ($matches[2] === "lose") {
-        $gain = 0-$gain;
+        $gain = 0 - $gain;
     }
     $link->weight += $gain;
 }
 
-// add my links and node
-$node = new Node();
-$node->name = "Florent";
-$nodes[] = $node;
+// recursively loop through every node and neighbours
 
-$names = array_keys($nodesPerName);
-foreach ($names as $name) {
-    $link = new Link($node, $nodesPerName[$name]);
-    // weight left at zero
-}
+// loop through every links
+// if X link have been used
+// return and add thee weigh saved
+// save the weight of the selected link in an array
+// take node 2
+// select a link that lead to an not visited node
 
-
-// ==============================================
-
-
-// systematically explore every paths from each person
-// take in turn each node
-// then find explore all available neighbour until all neighbour are visited
-
-$personCount = count(array_keys($nodesPerName)) + 1;
+$personCount = count(array_keys($nodesPerName));
 $maxWeight = -999;
 
 foreach ($nodes as $node) {
@@ -169,4 +171,26 @@ function registerWeight($usedLinks)
     }
 }
 
-echo "day 13.2: $maxWeight<br>";
+echo "Day 13.1: $maxWeight<br>";
+
+// part 2
+
+// add my links and node
+$node = new Node();
+$node->name = "Florent";
+$nodes[] = $node;
+
+$names = array_keys($nodesPerName);
+foreach ($names as $name) {
+    $link = new Link($node, $nodesPerName[$name]);
+    // weight left at zero
+}
+
+$personCount = count(array_keys($nodesPerName)) + 1;
+$maxWeight = -999;
+
+foreach ($nodes as $node) {
+    processNode($node, [], []);
+}
+
+echo "Day 13.2: $maxWeight<br>";

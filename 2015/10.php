@@ -1,14 +1,15 @@
 <?php
-ini_set("memory_limit", "1000M");
+// http://adventofcode.com/2015/day/10
 
 $input = "3113322113";
 
-
-function process($input) {
+function process($input)
+{
     $currentDigit = (int)$input[0];
     $count = 1;
-    $output = "";
-    for ($i=1; $i < count($input); $i++) { 
+    $output = [];
+    $inputLength = count($input);
+    for ($i = 1; $i < $inputLength; $i++) {
         if ($input[$i] === $currentDigit) {
             $count++;
         } else {
@@ -28,13 +29,12 @@ function process($input) {
 
 // turn input in an array if int
 $input = str_split($input);
-for ($i=0; $i < count($input); $i++) { 
+$len = count($input);
+for ($i = 0; $i < $len; $i++) {
     $input[$i] = (int)$input[$i];
 }
 
-// processing 40 loops takes 2 seconds
-// processing 50 loops takes 15 seconds
-for ($i=0; $i < 50; $i++) { 
+for ($i = 0; $i < 50; $i++) {
     $input = process($input);
 
     if ($i === 39) {

@@ -2,13 +2,11 @@
 // http://adventofcode.com/2015/day/16
 
 $resource = fopen("16_input.txt", "r");
+$matches = [];
 $aunts = [];
 
 while (($line = fgets($resource)) !== false) {
-    $line = trim($line);
-
-    $matches = [];
-    preg_match("/^Sue ([0-9]+): (.*)$/", $line, $matches);
+    preg_match("/^Sue ([0-9]+): (.*)/", $line, $matches);
 
     $auntData = [];
     $properties = explode(", ", $matches[2]);
@@ -72,5 +70,8 @@ foreach ($aunts as $id => $aunt) {
     $part2ProbableAunts[$id] = $aunt;
 }
 
-var_dump($probableAunts); // 103
-var_dump($part2ProbableAunts); // 103
+$id = array_keys($probableAunts)[0];
+echo "Day 16.1: $id\n";
+
+$id = array_keys($part2ProbableAunts)[0];
+echo "Day 16.2: $id\n";
