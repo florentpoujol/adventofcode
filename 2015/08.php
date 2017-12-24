@@ -1,7 +1,7 @@
 <?php
 // http://adventofcode.com/2015/day/8
 
-$resource = fopen("8_input.txt", "r");
+$resource = fopen("08_input.txt", "r");
 
 $nbStringChars = 0;
 $nbMemoryChars = 0;

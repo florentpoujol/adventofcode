@@ -1,7 +1,7 @@
 <?php
 // http://adventofcode.com/2015/day/5
 
-$resource = fopen("5_input.txt", "r");
+$resource = fopen("05_input.txt", "r");
 
 $niceCount = 0;
 $niceCount2 = 0;

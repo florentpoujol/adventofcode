@@ -1,7 +1,7 @@
 <?php
 // http://adventofcode.com/2015/day/6
 
-$resource = fopen("6_input.txt", "r");
+$resource = fopen("06_input.txt", "r");
 $instructions = [];
 
 while (($line = fgets($resource)) !== false) {

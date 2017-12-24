@@ -1,7 +1,7 @@
 <?php
 // http://adventofcode.com/2015/day/2
 
-$resource = fopen("2_input.txt", "r");
+$resource = fopen("02_input.txt", "r");
 
 $totalSurface = 0;
 $ribbonLength = 0;

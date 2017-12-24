@@ -1,7 +1,7 @@
 <?php
 // http://adventofcode.com/2015/day/3
 
-$input = str_split(file_get_contents("3_input.txt", "r"));
+$input = str_split(file_get_contents("03_input.txt", "r"));
 
 $coords = [0, 0];
 $visitedLocations = ["0_0"];

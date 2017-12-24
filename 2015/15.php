@@ -17,20 +17,18 @@ $input = $testInput; // test
 $lines = explode(PHP_EOL, $input);
 
 $data = []; // factor per property per ingredient
+$matches = [];
 
 foreach ($lines as $line) {
-    $matches = [];
-    preg_match("/^([a-z]+): (.+)$/i", $line, $matches);
-    //var_dump($matches);
-    $ingredient = $matches[1];
-    $data[$ingredient] = [];
+    preg_match("/^([a-z]+).+([0-9-]+).+([0-9-]+).+([0-9-]+).+([0-9-]+).+([0-9-]+)/i", $line, $matches);
 
-    $properties = explode(", ", $matches[2]);
-    foreach ($properties as $prop) {
-        $tmp = explode(" ", $prop); // tmp[0] = prop name   tmp[1] = pro value
-
-        $data[$ingredient][$tmp[0]] = (int)$tmp[1];
-    }
+    $data[$matches[1]] = [
+        "capacity" => (int)$matches[2],
+        "durability" => (int)$matches[3],
+        "flavor" => (int)$matches[4],
+        "texture" => (int)$matches[5],
+        "calories" => (int)$matches[6],
+    ];
 }
 
 //var_dump($data);

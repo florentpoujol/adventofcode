@@ -1,7 +1,7 @@
 <?php
 // http://adventofcode.com/2015/day/9
 
-$resource = fopen("9_input.txt", "r");
+$resource = fopen("09_input.txt", "r");
 
 $data = [];
 // ie = $data["London"] = ["Dublin" => 464, "Belfast" => 518]

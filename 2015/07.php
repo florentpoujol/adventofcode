@@ -1,5 +1,5 @@
 <?php
-$resource = fopen("7_input.txt", "r");
+$resource = fopen("07_input.txt", "r");
 
 $allWires = []; // key = wire name
 $allLines = [];
