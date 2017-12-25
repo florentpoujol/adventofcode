@@ -1,131 +1,52 @@
 <?php
 // http://adventofcode.com/2015/day/17
 
-$input = [150, 43, 3, 4, 10, 21, 44, 4, 6, 47, 41, 34, 17, 17, 44, 36, 31, 46, 9, 27, 38];
-$testInput = [25, 20, 15, 10, 5, 5];
+$containers = [150, 43, 3, 4, 10, 21, 44, 4, 6, 47, 41, 34, 17, 17, 44, 36, 31, 46, 9, 27, 38];
+// $containers = [25, 20, 15, 10, 5, 5]; // test
 
-$input = $testInput; // de-comment for test
-$targetCapacity = array_shift($input); // 150, or 25 for test input
-rsort($input);
-var_dump($input);
+$targetCapacity = array_shift($containers); // 150, or 25 for test input
+rsort($containers);
 
-// remove duplicates, but count them
-$duplicates = []; // key = number, value = count
-
-$i = 1;
-do {
-    $value = $input[$i];
-    if ($value === $input[$i - 1]) {
-        if (! isset($duplicates[$value])) {
-            $duplicates[$value] = 1;
-        }
-        $duplicates[$value]++;
-        //array_splice($input, $i, 1);
-    }
-    $i++;
-} while (isset($input[$i]));
-var_dump($input);
-var_dump($duplicates);
-
-// take the first number from input
-// add it to total
-// if total is inferior to 150 > repeat from the remaining entries
-// if total if equal to 150
-    // > save this configuration
-    // > continue with remaining numbers if any
-// if total is superior to 150 > discard this number and continue with remaining numbers
-
+$minCombinationSize = 999;
 $combinations = [];
-var_dump("-------------------------------------------------------");
 
-function get_first_elt(&$array)
+function run(int $currentCapacity, array $combination, array $remainingContainers)
 {
-    foreach ($array as $id => $value) {
-        $elt = ["id" => $id, "value" => $value, "str" => "$id $value"];
-        unset($array[$id]);
-        return $elt;
+    if (empty($remainingContainers)) {
+        return;
     }
-    return null;
-}
 
-function process($combArray, $remainingArray)
-{
-    global $combinations, $targetCapacity;
+    global $targetCapacity, $combinations, $minCombinationSize;
 
-    $sum = $combArray["sum"];
-    $firstElt = get_first_elt($remainingArray);
-    $newValue = $firstElt["value"];
-    $newSum = $sum + $newValue;
+    while (!empty($remainingContainers)) {
+        $_combination = $combination;
 
-    if ($newSum < $targetCapacity) {
-        $combArray["sum"] = $newSum;
-        $combArray[$firstElt["id"]] = $firstElt["value"];
+        $container = array_shift($remainingContainers);
+        $newCapacity = $currentCapacity + $container;
+        $_combination[] = $container;
 
-        if (count($remainingArray) > 0) {
-            process($combArray, $remainingArray);
-        } else {
-            var_dump($combArray);
+        if ($newCapacity < $targetCapacity) {
+            run($newCapacity, $_combination, $remainingContainers);
         }
-
-    } elseif ($newSum === $targetCapacity) {
-        //process($combArray, $remainingArray);
-        $oldCombArray = $combArray;
-
-        $combArray["sum"] = $newSum;
-        $combArray[$firstElt["id"]] = $firstElt["value"];
-        $combinations[] = $combArray;
-
-        if (count($remainingArray) > 0) {
-            // continue with the old combArray and the "winning value" removed
-            process($oldCombArray, $remainingArray);
-        } else {
-            var_dump("=== SUCCESS ===");
-            var_dump($combArray);
-        }
-
-    } elseif ($newSum > $targetCapacity) {
-        // if remaingArray isn't empty
-        // continue but the value that put the sum above the target removed
-        if (count($remainingArray) > 0) {
-            process($combArray, $remainingArray);
-        } else {
-            var_dump($combArray);
+        elseif ($newCapacity === $targetCapacity) {
+            $combinations[] = $_combination;
+            $minCombinationSize = min($minCombinationSize, count($_combination));
         }
     }
 }
 
-while (($initialValue = get_first_elt($input)) !== null) {
-    $combArray = [
-        "sum" => $initialValue["value"],
-        $initialValue["id"] => $initialValue["value"],
-    ];
-    process($combArray, $input);
-}
-var_dump("-------------------------------------------------------");
+run(0, [], $containers);
 
-var_dump($combinations); // 3, 6 = too low
+// var_dump($combinations);
+$count = count($combinations);
 
-// loop through the combinations
-// if one of the number part of that combination is one of the duplicates
-// increase the resultCount by that occurence count
+echo "Day 17.1: $count\n";
 
-$resultCount = 0;
-$duplicatesValues = array_keys($duplicates);
+$count = 0;
 foreach ($combinations as $combination) {
-    $count = 1;
-    foreach ($combination as $key => $value) {
-        if ($key === "sum") {
-            continue;
-        }
-
-        if (in_array($value, $duplicatesValues)) {
-            $count *= $duplicates[$value];
-        }
+    if (count($combination) === $minCombinationSize) {
+        $count++;
     }
-    $resultCount += $count;
 }
 
-
-var_dump("resultCount = $resultCount");
-
-
+echo "Day 17.2: $count\n";
