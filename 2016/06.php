@@ -1,29 +1,29 @@
 <?php
+// http://adventofcode.com/2016/day/6
 
-$res = fopen("60_input.txt", "r");
-// for each columns, holds an array "freq by letter"
-$frequenciesByColumn = [];
-$size = 0;
+$res = fopen("06_input.txt", "r");
+
+$frequenciesByColumn = []; // frequencies by letters, by columns
+$lineLength = -1;
 
 while (($line = fgets($res)) !== false) {
     $line = trim($line);
 
-    if ($size === 0) {
-        $size = strlen($line);
+    if ($lineLength === -1) {
+        $lineLength = strlen($line);
     }
 
     $letters = str_split($line);
 
-    for ($col=0; $col < $size; $col++) {
-        
-        if (! array_key_exists($col, $frequenciesByColumn)) {
+    for ($col = 0; $col < $lineLength; $col++) {
+        if (!isset($frequenciesByColumn[$col])) {
             $frequenciesByColumn[$col] = [];
         }
 
         $letter = $letters[$col];
         $freqByLetter =& $frequenciesByColumn[$col];
 
-        if (! array_key_exists($letter, $freqByLetter)) {
+        if (!isset($freqByLetter[$letter])) {
             $freqByLetter[$letter] = 1;
         } else {
             $freqByLetter[$letter]++;
@@ -48,8 +48,7 @@ unset($freqByLetter);
 $msg = "";
 $msg2 = "";
 
-foreach ($frequenciesByColumn as $freqByLetter) {
-
+foreach ($frequenciesByColumn as $column => $freqByLetter) {
     $maxCount = 0;
     $mostCommonLetter = "-";
 
@@ -71,7 +70,7 @@ foreach ($frequenciesByColumn as $freqByLetter) {
                 $leastCommonLetter = $letter;
             }
         }, 
-        ARRAY_FILTER_USE_BOTH
+        ARRAY_FILTER_USE_BOTH // pass both key and value to the callback
     );
 
     $msg .= $mostCommonLetter;
