@@ -30,9 +30,9 @@ $elevator = []; // contains the same kind of values based on what is inside the 
 
 /*
 analyse floor, check floor up to see what you can take
-    you can take a M          if there is no G or the compatible one
-    you can take a G          if there is no unpowered M other than the compatible one
-    you can take a M and a G  if there is no unpowered M other than the compatible one
+    you can take a M                    if there is no G or the compatible one
+    you can take a G                    if there is no unpowered M other than the compatible one
+    you can take a compatible M and G   if there is no unpowered M other than the compatible one
 always chose tho have the most full elevator but no more than two elements
 
 get up one floor
@@ -199,7 +199,7 @@ class Floor
     public function add($parts)
     {
         foreach ($parts as $part) {
-            if ($this->hasPart($part)) {
+            if (!$this->hasPart($part)) {
                 $this->parts[] = new Part($part);
             }
         }
