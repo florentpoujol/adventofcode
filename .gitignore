@@ -1,3 +1,5 @@
 gitignore/
 .phpintel/
 .idea/
+.vscode
+*.exe
