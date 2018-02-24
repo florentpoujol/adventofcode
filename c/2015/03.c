@@ -6,71 +6,63 @@
 int main()
 {
     char* input = readInput("03");
-    char* coords = calloc(10,sizeof(char));
+    char* strCoords = calloc(10,sizeof(char));
     char c, tmp[5];
     
-    int moveCount = strlen(input), i = 0, vc = 1, x = 0, y = 0;
-    
+    int moveCount = strlen(input), i = 0, vc = 1;
     char** visitedCoords = calloc(moveCount, sizeof(char*)); // 10 is max size for each coords
-    
     visitedCoords[0] = "0_0";
+    int* coords = calloc(2, sizeof(int));
 
     while ((c = input[i++]) != '\0') {
-        if (c == '<') x -= 1;
-        else if (c == '>') x += 1;
-        else if (c == '^') y -= 1;
-        else if (c == 'v') y += 1;
+        if (c == '<') coords[0] -= 1;
+        else if (c == '>') coords[0] += 1;
+        else if (c == '^') coords[1] -= 1;
+        else if (c == 'v') coords[1] += 1;
 
-        coords[0] = '\0';
-        strcat(coords, itoa(x, tmp, 10));
-        strcat(coords, "_");
-        strcat(coords, itoa(y, tmp, 10));
+        strCoords[0] = '\0';
+        strcat(strCoords, itoa(coords[0], tmp, 10));
+        strcat(strCoords, "_");
+        strcat(strCoords, itoa(coords[1], tmp, 10));
 
-        if (inStrArray(visitedCoords, moveCount, coords) == 0) {
-            visitedCoords[vc++] = coords;
-            coords = calloc(10, sizeof(char));
+        if (inStrArray(visitedCoords, moveCount, strCoords) == 0) {
+            visitedCoords[vc++] = strCoords;
+            strCoords = calloc(10, sizeof(char));
         }
     }
 
     printf("Day 2015.03.1 %d\n", vc);
 
     // -----------------
+
     visitedCoords = calloc(moveCount, sizeof(char*)); // 10 is max size for each coords
     visitedCoords[0] = "0_0";
-    coords = calloc(10, sizeof(char));
+    strCoords = calloc(10, sizeof(char));
     i = 0;
     vc = 1;
     short isSantasTurns = 0;
-    int santaX = 0, santaY = 0, robotX = 0, robotY = 0;
+    int santa[2] = {0,0}, robot[2] = {0,0};
     
     while ((c = input[i++]) != '\0') {
-        isSantasTurns = !isSantasTurns;
-
-        if (isSantasTurns) {
-            if (c == '<') santaX -= 1;
-            else if (c == '>') santaX += 1;
-            else if (c == '^') santaY -= 1;
-            else if (c == 'v') santaY += 1;
-
-            coords[0] = '\0';
-            strcat(coords, itoa(santaX, tmp, 10));
-            strcat(coords, "_");
-            strcat(coords, itoa(santaY, tmp, 10));
+        if (isSantasTurns = !isSantasTurns) {
+            coords = santa;
         } else {
-            if (c == '<') robotX -= 1;
-            else if (c == '>') robotX += 1;
-            else if (c == '^') robotY -= 1;
-            else if (c == 'v') robotY += 1;
+            coords = robot;
+        }
 
-            coords[0] = '\0';
-            strcat(coords, itoa(robotX, tmp, 10));
-            strcat(coords, "_");
-            strcat(coords, itoa(robotY, tmp, 10));
-        }       
+        if (c == '<') coords[0] -= 1;
+        else if (c == '>') coords[0] += 1;
+        else if (c == '^') coords[1] -= 1;
+        else if (c == 'v') coords[1] += 1;
 
-        if (inStrArray(visitedCoords, moveCount, coords) == 0) {
-            visitedCoords[vc++] = coords;
-            coords = calloc(10, sizeof(char));
+        strCoords[0] = '\0';
+        strcat(strCoords, itoa(coords[0], tmp, 10));
+        strcat(strCoords, "_");
+        strcat(strCoords, itoa(coords[1], tmp, 10));
+
+        if (inStrArray(visitedCoords, moveCount, strCoords) == 0) {
+            visitedCoords[vc++] = strCoords;
+            strCoords = calloc(10, sizeof(char));
         }
     }
 
