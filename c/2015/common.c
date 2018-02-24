@@ -4,13 +4,14 @@
 
 char* readInput(char* name) 
 {
-    char fullName[20] = "input/";
+    char fullName[20] = "input\\";
     strcat(fullName, name);
     strcat(fullName, ".txt");
 
     FILE* f = fopen(fullName, "r");
     fseek(f, 0, SEEK_END);
     int length = ftell(f);
+    rewind(f);
 
     char* input = malloc(length * sizeof(char));
     char c;
@@ -40,27 +41,30 @@ int strCount(char* str, char needle)
 char** strSplit(char* str, char delimiter, int lineSize, int* arraySize)
 {
     *arraySize = strCount(str, delimiter) + 1;
-    
+
+    char** array = malloc(*arraySize * sizeof(char*));
     char* line = malloc(lineSize * sizeof(char));
-    char** array = malloc(*arraySize * sizeof(line));
-    
     char c;
-    int strI = 0, lineI = 0, arrayI = 0;
-    while ((c = str[strI++]) != '\0') {
+    int i = 0, j = 0, k = 0;
+    while ((c = str[i++]) != '\0') {
         if (c == delimiter) {
-            array[arrayI++][lineI] = '\0';
-            lineI = 0;
+            line[k] = '\0';
+            k = 0;
+            array[j++] = line;
+            line = malloc(lineSize * sizeof(char));
         } else {
-            array[arrayI][lineI++] = c;
+            line[k++] = c;
         }
     }
+    line[k] = '\0';
+    array[j] = line;
 
     return array;
 }
 char** strSplit2(char* str, char delimiter) 
 {
     int arraySize;
-    return strSplit(str, delimiter, 50, &arraySize);
+    return strSplit(str, delimiter, 20, &arraySize);
 }
 
 char** readInputAsList(char* name, int* arraySize) 
