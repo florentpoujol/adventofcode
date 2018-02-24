@@ -1,3 +1,5 @@
+// http://adventofcode.com/2015/day/2
+
 #include <stdio.h>
 #include "common.c"
 

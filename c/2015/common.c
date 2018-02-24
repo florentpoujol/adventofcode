@@ -22,7 +22,7 @@ char* readInput(char* name)
     }
     input[i] = '\0';
 
-    fclose(f);
+    // fclose(f); // make some scripts crash when run not in the debugger...
     return input;
 }
 
@@ -71,4 +71,16 @@ char** readInputAsList(char* name, int* arraySize)
 {
     char* input = readInput(name);
     return strSplit(input, '\n', 50, arraySize);
+}
+
+int inStrArray(char** array, int arraySize, char* needle)
+{
+    for (int i = 0; i < arraySize; i++) {
+        char* haystack = array[i];
+        if (haystack == 0) break;
+        if (strcmp(haystack, needle) == 0) {
+            return 1;
+        }
+    }
+    return 0;
 }
