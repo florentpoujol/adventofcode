@@ -84,3 +84,10 @@ int inStrArray(char** array, int arraySize, char* needle)
     }
     return 0;
 }
+
+// char* intToString(int num)
+// {
+//     // char* output = malloc(10 * sizeof(char));
+//     char* output[10];
+//     return itoa(num, output, 10);
+// }
