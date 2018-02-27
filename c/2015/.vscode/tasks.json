@@ -6,7 +6,7 @@
         {
             "label": "compile script",
             "type": "shell",
-            "command": "gcc 04.c -g3 -o 'output\\04.exe'",
+            "command": "gcc 05.c -g3 -o 'output\\05.exe'",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -15,7 +15,7 @@
         {
             "label": "execute script",
             "type": "shell",
-            "command": ".\\output\\04.exe",
+            "command": ".\\output\\05.exe",
             "problemMatcher": []
         }
     ]
