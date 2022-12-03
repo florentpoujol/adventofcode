@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $data = explode(PHP_EOL, file_get_contents('01_input.txt'));
 
 $maxCalories = 0;
