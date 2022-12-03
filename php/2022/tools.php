@@ -26,3 +26,10 @@ function printDay(string $text): void
     echo $text . PHP_EOL;
     echo "Done in $time ms" . PHP_EOL . PHP_EOL;
 }
+
+function dd(mixed ...$stuffs): never
+{
+    var_dump(...$stuffs);
+
+    exit;
+}
