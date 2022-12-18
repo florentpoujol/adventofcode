@@ -2,20 +2,23 @@
 
 declare(strict_types=1);
 
-namespace FlorentPulp\Adv2022;
+namespace FlorentPoujol\Adv2022\_07;
 
 use RuntimeException;
 
 require_once 'tools.php';
 
-final class File {
+final class File
+{
     public function __construct(
         public readonly string $name,
         public readonly int $size,
     ) {
     }
 }
-final class Directory {
+
+final class Directory
+{
     public readonly string $fullName;
 
     /** @var array<self|File> */
