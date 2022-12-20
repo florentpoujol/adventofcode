@@ -50,6 +50,10 @@ while (($line = trim((string) fgets($handle))) !== '') {
             $tailPos = $previousHeadPos;
             // and register new pos
             $tailVisitedPos[$tailPos['x'] . '_' . $tailPos['y']] = null;
+
+            // this algo is slightly wrong becase it doesn't take into account the rule that
+            // "if the head and tail aren't touching and aren't in the same row or column, the tail always moves one step diagonally to keep up"
+            // but it does work like that for the part 1, but not for part 2
         }
     }
 }
@@ -113,9 +117,26 @@ while (($line = trim((string) fgets($handle))) !== '') {
                 abs($knotsPos[$tailIndex - 1]['x'] - $knotsPos[$tailIndex]['x']) > 1
                 || abs($knotsPos[$tailIndex - 1]['y'] - $knotsPos[$tailIndex]['y']) > 1
             ){
+                // so here, unlike in part 1, we have to factor for the following rule :
+                // "if the head and tail aren't touching and aren't in the same row or column, the tail always moves one step diagonally to keep up"
                 $previousKnotPosTemp = $knotsPos[$tailIndex];
-                // move tail to previous head pos
-                $knotsPos[$tailIndex] = $previousKnotPos;
+
+                if (
+                    $knotsPos[$tailIndex - 1]['x'] !== $knotsPos[$tailIndex]['x']
+                    && $knotsPos[$tailIndex - 1]['y'] !== $knotsPos[$tailIndex]['y']
+                ) {
+                    // they are not in the same column or row
+                    $xNeg = $knotsPos[$tailIndex - 1]['x'] - $knotsPos[$tailIndex]['x'] < 0;
+                    $yNeg = $knotsPos[$tailIndex - 1]['y'] - $knotsPos[$tailIndex]['y'] < 0;
+
+                    $knotsPos[$tailIndex]['x'] += $xNeg ? -1 : 1;
+                    $knotsPos[$tailIndex]['y'] += $yNeg ? -1 : 1;
+                } else {
+                    // otherwise, just do as before, move the current knots where the previous was
+                    // move tail to previous head pos
+                    $knotsPos[$tailIndex] = $previousKnotPos;
+                }
+
                 $previousKnotPos = $previousKnotPosTemp;
 
                 if ($tailIndex === 9) {
@@ -127,7 +148,7 @@ while (($line = trim((string) fgets($handle))) !== '') {
             }
         }
 
-        if ($totalStep === 6) {
+        if ($totalStep === 21) {
             dd($knotsPos);
         }
     }
