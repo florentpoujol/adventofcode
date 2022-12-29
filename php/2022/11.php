@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FlorentPoujoul\Adv2022\_11;
+namespace FlorentPoujol\Adv2022\_11;
 
 use Closure;
 
@@ -128,7 +128,6 @@ while(++$roundCount <= 20) {
             $newMonkeyId = $monkey->test($item);
             $monkeys[$newMonkeyId]->items[] = $item;
         }
-
     }
 }
 unset($monkey);

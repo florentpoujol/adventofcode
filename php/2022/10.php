@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace FlorentPoujoul\Adv2022\_10;
+namespace FlorentPoujol\Adv2022\_10;
 
 require_once 'tools.php';
 
