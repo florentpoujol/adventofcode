@@ -1,8 +1,17 @@
 <?php
 
+/*
+ * this is really the same as part 1 except that all numbers are strings,
+ * and handled by the bcmath extension
+ *
+ * This may be an actual solution but I don't know, some numbers get impossibly big
+ * so the script, while fast for the few first loops, gets also impossibly slow
+ * and didn't complete even after running for several hours (on a single 3.5GHz CPU).
+ */
+
 declare(strict_types=1);
 
-namespace FlorentPoujol\Adv2022\_11;
+namespace FlorentPoujol\Adv2022\_112;
 
 use Closure;
 
@@ -13,15 +22,14 @@ $handle = fopen('11_input.txt', 'r');
 startTimer();
 
 final class Monkey {
-    /** @var array<int> */
+    /** @var array<string> */
     public array $items;
 
-    /** @var Closure(int $old): int */
+    /** @var Closure(string $old): string */
     public Closure $operation;
 
-    /** @var Closure(int $worryLevel): bool */
+    /** @var Closure(string $worryLevel): bool */
     public Closure $testCondition;
-    public int $testValue;
 
     /** @var array<int, int> */
     public array $destinationMonkeyIds = [
@@ -34,7 +42,7 @@ final class Monkey {
     /**
      * @return int The id of the monkey that receive the item
      */
-    public function test(int $worryLevel): int
+    public function test(string $worryLevel): int
     {
         return $this->destinationMonkeyIds[(int) ($this->testCondition)($worryLevel)];
     }
@@ -70,23 +78,23 @@ while (($line = fgets($handle)) !== false) {
     }
 
     if (preg_match('/^Starting items: ([0-9, ]+)$/', $line, $matches)) {
-        $currentMonkey->items = array_map('intval', explode(', ', $matches[1]));
+        $currentMonkey->items = explode(', ', $matches[1]);
 
         continue;
     }
 
     if (preg_match('/^Operation: new = old ([+*]) (\d+|old)$/', $line, $matches)) {
         if ($matches[1] === '+') {
-            $currentMonkey->operation = static function (int $old) use ($matches): int {
-                return $old + (int) $matches[2];
+            $currentMonkey->operation = static function (string $old) use ($matches): string {
+                return bcadd($old, $matches[2]);
             };
         } else {
-            $currentMonkey->operation = static function (int $old) use ($matches): int {
+            $currentMonkey->operation = static function (string $old) use ($matches): string {
                 if ($matches[2] === 'old') {
-                    return $old * $old;
+                    return bcmul($old, $old);
                 }
 
-                return $old * (int) $matches[2];
+                return bcmul($old, $matches[2]);
             };
         }
 
@@ -94,8 +102,7 @@ while (($line = fgets($handle)) !== false) {
     }
 
     if (preg_match('/^Test: divisible by (\d+)$/', $line, $matches)) {
-        $currentMonkey->testValue = (int) $matches[1];
-        $currentMonkey->testCondition = static fn (int $worryLevel) => ($worryLevel % $currentMonkey->testValue) === 0;
+        $currentMonkey->testCondition = static fn (string $worryLevel): bool => bcmod($worryLevel, $matches[1]) === '0';
 
         continue;
     }
@@ -111,13 +118,11 @@ while (($line = fgets($handle)) !== false) {
     }
 }
 
-$part2Monkeys = [];
-foreach ($monkeys as $monkey) {
-    $part2Monkeys[] = clone $monkey;
-}
+ini_set('memory_limit', '-1');
 
+echo 'start ' . date('H:i:s') . PHP_EOL;
 $roundCount = 0;
-while(++$roundCount <= 20) {
+while(++$roundCount <= 200) {
     foreach ($monkeys as $monkey) {
         $items = $monkey->items;
         foreach ($items as $item) {
@@ -125,63 +130,23 @@ while(++$roundCount <= 20) {
             $monkey->totalInspectedItemCount++;
             $item = ($monkey->operation)($item);
 
-            $item = (int) ($item / 3);
-
             $newMonkeyId = $monkey->test($item);
             $monkeys[$newMonkeyId]->items[] = $item;
         }
     }
+
+    // if ($roundCount % 10 === 0) {
+    //     echo "roundcount $roundCount | " . date('H:i:s') . PHP_EOL;
+    // }
 }
+echo 'done ' . date('H:i:s') . PHP_EOL;
 unset($monkey);
 
 // dumpMonkeys();
+// exit;
 
 $inspectedItems = array_map(fn (MOnkey $monkey): int => $monkey->totalInspectedItemCount, $monkeys);
 rsort($inspectedItems);
 $monkeyBusiness = $inspectedItems[0] * $inspectedItems[1];
 
-printDay("11.1 : $monkeyBusiness");
-
-// --------------------------------------------------
-
-startTimer();
-
-$monkeys = $part2Monkeys;
-
-// so the trick here is to divide the worry level by a value
-// that will not change the result of the test.
-//
-// See
-// - https://en.wikipedia.org/wiki/Chinese_remainder_theorem
-// - https://www.reddit.com/r/adventofcode/comments/zifqmh/2022_day_11_solutions/
-//
-// Note that I do not understand why this works...
-
-$superMod = 1;
-foreach ($monkeys as $monkey) {
-    $superMod *= $monkey->testValue;
-}
-
-$roundCount = 0;
-while(++$roundCount <= 10_000) {
-    foreach ($monkeys as $monkey) {
-        $items = $monkey->items;
-        foreach ($items as $item) {
-            array_shift($monkey->items);
-            $monkey->totalInspectedItemCount++;
-            $item = ($monkey->operation)($item);
-
-            $item %= $superMod;
-
-            $newMonkeyId = $monkey->test($item);
-            $monkeys[$newMonkeyId]->items[] = $item;
-        }
-    }
-}
-unset($monkey);
-
-$inspectedItems = array_map(fn (MOnkey $monkey): int => $monkey->totalInspectedItemCount, $monkeys);
-rsort($inspectedItems);
-$monkeyBusiness = $inspectedItems[0] * $inspectedItems[1];
-
-printDay("11.2 : $monkeyBusiness"); // 14508081294
+printDay("11.2 : $monkeyBusiness");
