@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-namespace FlorentPoujol\Adv2022\_01;
-
 require_once './tools.php';
 
 $handle = fopen('input/01.txt', 'r');
