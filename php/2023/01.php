@@ -76,6 +76,9 @@ while (($line = trim((string) fgets($handle))) !== '') {
     $digitOne = textDigitToIntDigit($matches[1]);
 
     $matches = [];
+    // note Florent : this works because by default, regexes are greedy and the .* will try to match as much as possible
+    // leaving the capturing group the least possible things, which are then at the end of the string
+    // The U option inverse this.
     preg_match("/^.*{$capturingGroup}/", $line, $matches);
     if (! isset($matches[1])) {
         dd('error: second match not found', $matches, $line);
