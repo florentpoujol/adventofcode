@@ -34,6 +34,11 @@ $valuablesCoordinatesWithNumbers = [
     // values are the number that we find at this coordinate (for debug)
 ];
 
+$partNumbersPerStarsCoords = [
+    // keys are star coordinates as string
+    // value is the number of numbers adjacent
+];
+
 foreach ($map as $y => $chars) {
     foreach ($chars as $x => $char) {
         if (is_numeric($char)) {
@@ -66,6 +71,28 @@ foreach ($map as $y => $chars) {
             $coordinatesPerNumbers[$currentNumber] ??= [];
             $coordinatesPerNumbers[$currentNumber][] = $currentNumberCoordinates;
 
+            foreach ($currentNumberCoordinates as $oneDigitCoords) {
+                [$digitX, $digitY] = explode('_', $oneDigitCoords);
+
+                // look around to find all the stars
+                for ($i = $digitX - 1; $i <= $digitX + 1 ; $i++) {
+                    for ($j = $digitY - 1; $j <= $digitY + 1 ; $j++) {
+                        if ($i === $digitX && $j === $digitY) {
+                            continue;
+                        }
+
+                        if (isset($map[$j][$i]) && $map[$j][$i] === '*') {
+                            $startCoords = "{$i}_$j";
+                            $partNumbersPerStarsCoords[$startCoords] ??= [];
+
+                            if (! in_array($currentNumber, $partNumbersPerStarsCoords[$startCoords], true)) {
+                                $partNumbersPerStarsCoords[$startCoords][] = $currentNumber;
+                            }
+                        }
+                    }
+                }
+            }
+
             $currentNumber = '';
             $currentNumberCoordinates = [];
         }
@@ -87,7 +114,7 @@ foreach ($coordinatesPerNumbers as $number => $coordSets) {
 
 // var_dump($map, $coordinatesPerNumbers);
 
-printDay("03.1: $sum"); // 7.1 ms
+printDay("03.1: $sum"); // 7.1 ms (16.5 ms with the added processing for part 2)
 
 // --------------------------------------------------
 
@@ -95,6 +122,12 @@ rewind($handle);
 startTimer();
 $sum = 0;
 
-// TODO
+foreach ($partNumbersPerStarsCoords as $startCoords => $partNumbers) {
+    if (count($partNumbers) !== 2) {
+        continue;
+    }
+
+    $sum += ($partNumbers[0] * $partNumbers[1]);
+}
 
 printDay("03.2: $sum");
