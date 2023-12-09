@@ -44,18 +44,63 @@ foreach ($times as $i => $time) {
     $wonRaces[] = $wonRacesCount;
 }
 
-$sum = 1;
+$value = 1;
 foreach ($wonRaces as $wonRaceCount) {
-    $sum *= $wonRaceCount;
+    $value *= $wonRaceCount;
 }
 
-printDay("06.1: $sum"); //
+printDay("06.1: $value"); // 0.045 ms
 
 // --------------------------------------------------
 
 rewind($handle);
 startTimer();
 
+// test
+// $time = 71_530;
+// $targetDistance = 940_200;
+// prod
+$time = 55_826_490;
+$targetDistance = 246_144_110_121_111;
+
+// So of course we shouldn't here checks all possible times.
+// We will check all times from the beginning until we find the first one that makes use winn,
+// then we will do the same backward from the end until we find the first one that doesn't.
+// That will give use the ranges of times that makes us win.
+
+// from the start
+$firstWonRace = 0;
+
+for ($speed = 1; $speed < $time; $speed++) {
+    // $speed is both the time we pushed the button
+    // and thus the velocity at which the boat will travel for the remaining time
+
+    $remainingTime = $time - $speed;
+    $distance = $speed * $remainingTime;
+
+    if ($distance > $targetDistance) {
+        $firstWonRace = $speed;
+        break;
+    }
+}
+
+// from the end
+$lastWonRace = PHP_INT_MAX;
+for ($speed = $time; $speed > 0; $speed--) {
+    // $speed is both the time we pushed the button
+    // and thus the velocity at which the boat will travel for the remaining time
+
+    $remainingTime = $time - $speed;
+    $distance = $speed * $remainingTime;
+
+    if ($distance > $targetDistance) {
+        $lastWonRace = $speed;
+        break;
+    }
+}
 
 
-printDay("06.1: $sum");
+$diff = $lastWonRace - $firstWonRace + 1;
+// dd($firstWonRace, $lastWonRace, $diff);
+
+printDay("06.2: $diff"); // 1,2 s
