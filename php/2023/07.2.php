@@ -11,7 +11,6 @@ enum Card: int {
     case Ace = 14;
     case King = 13;
     case Queen = 12;
-    case Joker = 11;
     case Ten = 10; // Valet
     case Nine = 9;
     case Eight = 8;
@@ -21,6 +20,7 @@ enum Card: int {
     case Four = 4;
     case Three = 3;
     case Two = 2;
+    case Joker = 1;
 
     public static function fromString(string $card): self
     {
@@ -28,7 +28,6 @@ enum Card: int {
             'A' => self::Ace,
             'K' => self::King,
             'Q' => self::Queen,
-            'J' => self::Joker,
             'T' => self::Ten,
             '9' => self::Nine,
             '8' => self::Eight,
@@ -38,7 +37,27 @@ enum Card: int {
             '4' => self::Four,
             '3' => self::Three,
             '2' => self::Two,
+            'J' => self::Joker,
             default => throw new Exception("Unknown string card : '$card'"),
+        };
+    }
+
+    public function toString(): string
+    {
+        return match ($this) {
+             self::Ace => 'A',
+             self::King => 'K',
+             self::Queen => 'Q',
+             self::Ten => 'T',
+             self::Nine => '9',
+             self::Eight => '8',
+             self::Seven => '7',
+             self::Six => '6',
+             self::Five => '5',
+             self::Four => '4',
+             self::Three => '3',
+             self::Two => '2',
+             self::Joker => 'J',
         };
     }
 }
@@ -58,6 +77,7 @@ final readonly class Hand {
     /** @var array<Card> */
     private array $cards;
     private HandType $type;
+    public int $jokerCount;
 
     /**
      * @var int This is like a "rank", but that is pondered by type and card value, that we can calculate without looking at other card
@@ -81,34 +101,82 @@ final readonly class Hand {
         $this->calculateStrength();
     }
 
+    public function getType(): HandType
+    {
+        return $this->type;
+    }
+
     private function calculateType(): void
     {
-        $cardsPerType = [];
+        /** @var array<int, Card> $cardsPerType */
+        $cardsPerType = []; // without Joker
+        $jokerCount = 0;
         foreach ($this->cards as $card) {
+            if ($card === Card::Joker) {
+                $jokerCount++;
+                continue;
+            }
+
             $cardsPerType[$card->value] ??= [];
             $cardsPerType[$card->value][] = $card;
         }
 
-        /** @var array<int> $suiteLengths */
-        $suiteLengths = [];
+        $this->jokerCount = $jokerCount;
+
+        $hasSuiteOfFive = false;
+        $hasSuiteOfFour = false;
+        $hasSuiteOfThree = false;
+        $hasSuiteOfTwo = false;
+        $hasSuiteOfOne = false;
+
+        $pairsCount = 0;
+
         foreach ($cardsPerType as $cards) {
-            $suiteLengths[] = count($cards);
+            $count = count($cards);
+
+            $hasSuiteOfFive = $hasSuiteOfFive || $count === 5;
+            $hasSuiteOfFour = $hasSuiteOfFour || $count === 4;
+            $hasSuiteOfThree = $hasSuiteOfThree || $count === 3;
+            $hasSuiteOfTwo = $hasSuiteOfTwo || $count === 2;
+            $hasSuiteOfOne = $hasSuiteOfOne || $count === 1;
+
+            if ($count === 2) {
+                $pairsCount++;
+            }
         }
 
-        if (in_array(5, $suiteLengths, true)) {
+        if (
+            $jokerCount === 5
+            || $hasSuiteOfFive
+            || ($jokerCount === 1 && $hasSuiteOfFour)
+            || ($jokerCount === 2 && $hasSuiteOfThree)
+            || ($jokerCount === 3 && $hasSuiteOfTwo)
+            || ($jokerCount === 4 && $hasSuiteOfOne)
+        ) {
             $this->type = HandType::FiveOfAKind;
 
             return;
         }
 
-        if (in_array(4, $suiteLengths, true)) {
+        if (
+            $jokerCount === 4
+            || $hasSuiteOfFour
+            || ($jokerCount === 1 && $hasSuiteOfThree)
+            || ($jokerCount === 2 && $hasSuiteOfTwo)
+            || ($jokerCount === 3 && $hasSuiteOfOne)
+        ) {
             $this->type = HandType::FourOfAKind;
 
             return;
         }
 
-        if (in_array(3, $suiteLengths, true)) {
-            if (in_array(2, $suiteLengths, true)) {
+        if (
+            $jokerCount === 3
+            || $hasSuiteOfThree
+            || ($jokerCount === 1 && $hasSuiteOfTwo)
+            || ($jokerCount === 2 && $hasSuiteOfOne)
+        ) {
+            if ($hasSuiteOfTwo && !$hasSuiteOfOne) {
                 $this->type = HandType::FullHouse;
             } else {
                 $this->type = HandType::ThreeOfAKind;
@@ -117,12 +185,19 @@ final readonly class Hand {
             return;
         }
 
-        if (in_array(2, $suiteLengths, true)) {
-            $pairsCount = 0;
-            foreach ($suiteLengths as $length) {
-                if ($length === 2) {
-                    $pairsCount++;
-                }
+        // there is no need to check for (jokerCount === 2) below
+        // because if there is at least 2 jokers,
+        // the last condition above must always be true,
+        // and they are part or a full house, or 3, 4 or 5 of a kind
+
+        // There is no "two pairs" that have one or two jokers
+
+        if (
+            $hasSuiteOfTwo
+            || ($jokerCount === 1 && $hasSuiteOfOne)
+        ) {
+            if ($jokerCount === 1) {
+                $pairsCount++;
             }
 
             if ($pairsCount === 2) {
@@ -134,9 +209,7 @@ final readonly class Hand {
             return;
         }
 
-        if (count($suiteLengths) === 5) {
-            $this->type = HandType::HighCard;
-        }
+        $this->type = HandType::HighCard;
     }
 
     public function getStrength(): int
@@ -170,26 +243,33 @@ final readonly class Hand {
     {
         $cards = '';
         foreach ($this->cards as $card) {
-            $cards .= $card->name . ' ';
+            $cards .= $card->toString() . ' ';
         }
         $cards = trim($cards);
 
         $type = $this->type->name;
 
-        return "cards=[$cards] type=$type bid=$this->bid strength=$this->strength";
+        return "$type [$cards] $this->strength";
     }
 }
 
-function debug(array $handsByZeroIndexedRank): never
+/**
+ * @param array<Hand> $handsByZeroIndexedRank
+ */
+function debug(array $handsByZeroIndexedRank, ?HandType $handType = null, int $onlyWithJokerCount = -1): void
 {
-    echo '-------------------------' . PHP_EOL;
     foreach ($handsByZeroIndexedRank as $index => $hand) {
-        $rank = $index + 1 ;
-        echo "rank = $rank | hand : $hand" . PHP_EOL;
-    }
-    echo '-------------------------' . PHP_EOL;
+        if ($handType !== null && $hand->getType() !== $handType) {
+            continue;
+        }
 
-    exit();
+        if ($onlyWithJokerCount >= 0 && $hand->jokerCount !== $onlyWithJokerCount) {
+            continue;
+        }
+
+        $rank = $index + 1 ;
+        echo "$rank | $hand" . PHP_EOL;
+    }
 }
 
 startTimer();
@@ -215,19 +295,8 @@ foreach ($handsByZeroIndexedRank as $rank => $hand) {
     $totalWinnings += ($rank + 1) * $hand->bid;
 }
 
-// debug($handsByZeroIndexedRank);
+// debug($handsByZeroIndexedRank, HandType::ThreeOfAKind, 1);
 
-printDay("07.1: $totalWinnings"); // 250347426, in 11.151 ms
-// 251111616 is too high
-// 250345345 is too low (after fixing incorrect "two pairs" hands detection)
-// 256778213 (after increasing the card weight too much (at 100))
-
-// time taken : like two hours
-
-// --------------------------------------------------
-
-rewind($handle);
-startTimer();
-
-
-printDay("07.2: "); // 1
+printDay("07.2: $totalWinnings"); // 251224870, in 11.911 ms
+// 251094597 is too low
+// 251545177 is too high (after fixing the condition to properly find all "five of a kind")
