@@ -51,6 +51,7 @@ utils.startTimer()
 let totalSimScore = 0
 let count = 0
 let lastLeftValue = undefined
+let currentIndex = 0 // for technique 4
 
 // for technique 3 (is not faster than technique 1)
 // let countPerNumber = []
@@ -78,14 +79,25 @@ for (const leftValue of left) {
         // This bit below is the same but is slower, it takes 8/11 ms, against 0 ms
         // I thought not touching the array with shift/unshift would be faster,
         // but I guess the advantage of reducing the array size every time is worth it.
-        for (const value of right) {
-            if (value > leftValue) { // this works because the array is sorted asc
-                break;
+        // for (const value of right) {
+        //     if (value > leftValue) { // this works because the array is sorted asc
+        //         break;
+        //     }
+        //     if (value === leftValue) {
+        //         count++
+        //     }
+        // }
+
+        // technique 4 (like the first one, but without modifying the array)
+        let rightValue = 0
+        do {
+            rightValue = right[currentIndex]
+            currentIndex++
+            if (rightValue === leftValue) {
+                count++;
             }
-            if (value === leftValue) {
-                count++
-            }
-        }
+        } while (rightValue <= leftValue)
+        currentIndex--
     }
 
     // count = countPerNumber[leftValue] ?? 0 // for technique 3 (the whole if above is no useful then)
