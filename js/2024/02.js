@@ -82,6 +82,7 @@ utils.endInit()
 
 // --------------------------------------------------
 // part 1
+
 utils.startTimer()
 
 let safeCount = 0
@@ -112,15 +113,18 @@ for (const report of reports) {
     // Try again with either the levelIndex, or the previous levelIndex removed from the report.
     // If either one of these are also unsafe, the report can not be safe.
 
+    // But we also need to always check when the first element is removed because it can change
+    // the appearance of values incrementing or decrementing.
+
     if (
-        isSafe(report.toSpliced(0, 1)) // this additional check is actually needed to give the correct answer, I'm not sure why
+        isSafe(report.toSpliced(0, 1))
         || (levelIndex >= 2 && isSafe(report.toSpliced(levelIndex - 1, 1))) // >= 2 instead of (>= 1) because we are always checking 0 above
         || isSafe(report.toSpliced(levelIndex, 1))
     ) {
-        safeCount++
+        safeCount++;
     }
 
-    // this is the brute-force, which isn't even really slow
+    // this is the brute-force, which isn't even really that much slower (because all our reports are small)
     // for (let i = 0; i < report.length; i++) {
     //     if (isSafe(report.toSpliced(i, 1))) {
     //         safeCount++
