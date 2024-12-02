@@ -20,13 +20,17 @@ export function endDay(day, data)
 	console.log(`End of day ${day} in ${ms} ms: ${data}`)
 }
 
+export function endInit()
+{
+	const ms = endTimer()
+	console.log(`End of init in ${ms} ms`)
+}
+
 let i = 0
 export function dump(...data)
 {
 	i++
-	console.log('dump ' + i + ' -------------------------')
-	console.log(...data)
-	console.log('-------------------------')
+	console.log('dump ' + i, ...data)
 }
 
 export function dd(...data)
