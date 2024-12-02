@@ -20,9 +20,11 @@ export function endDay(day, data)
 	console.log(`End of day ${day} in ${ms} ms: ${data}`)
 }
 
+let i = 0
 export function dump(...data)
 {
-	console.log('dump -------------------------')
+	i++
+	console.log('dump ' + i + ' -------------------------')
 	console.log(...data)
 	console.log('-------------------------')
 }
