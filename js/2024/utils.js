@@ -20,6 +20,12 @@ export function endDay(day, data)
 	console.log(`End of day ${day} in ${ms} ms: ${data}`)
 }
 
+export function endPart(part, data)
+{
+	const ms = endTimer()
+	console.log(`End of part ${part} in ${ms} ms: ${data}`)
+}
+
 export function endInit()
 {
 	const ms = endTimer()
