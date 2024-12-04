@@ -29,15 +29,10 @@ for line in lines:
         if not letter.isdigit():
             continue
 
-        firstNumber = letter
-        break
-
-    for letter in line[::-1]: # reversed string
-        if not letter.isdigit():
-            continue
-
         lastNumber = letter
-        break
+
+        if firstNumber == '':
+            firstNumber = letter
 
     # print(line, f"{firstNumber}{lastNumber}")
     sum += int(f"{firstNumber}{lastNumber}")
@@ -78,6 +73,8 @@ literalToInt: dict[str, str] = {
 
 sum = 0
 for line in lines:
+    # using a regex could have been simpler...
+
     firstNumber: str = ''
     minIndex: int = 99999
     for searchedStr in searchedStrings:
@@ -85,7 +82,6 @@ for line in lines:
         if -1 < index < minIndex:
             minIndex = index
             firstNumber = literalToInt.get(searchedStr, searchedStr)
-
 
     lastNumber: str = ''
     minIndex: int = 99999
