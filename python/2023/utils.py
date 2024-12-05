@@ -1,3 +1,4 @@
+import json
 import time
 
 #read entire file
@@ -27,3 +28,7 @@ def endTimer() -> float:
 def endPart(part: str, data: str|int = '') -> None:
     timeInMilliseconds = endTimer() * 1_000
     print(f"End of part {part} in {timeInMilliseconds:.2f} ms: {data}")
+
+def dd(*args) -> None:
+    print(args)
+    exit(1)
