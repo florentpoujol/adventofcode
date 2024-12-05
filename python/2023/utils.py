@@ -29,6 +29,10 @@ def endPart(part: str, data: str|int = '') -> None:
     timeInMilliseconds = endTimer() * 1_000
     print(f"End of part {part} in {timeInMilliseconds:.2f} ms: {data}")
 
+def endInit() -> None:
+    timeInMilliseconds = endTimer() * 1_000
+    print(f"End of init in {timeInMilliseconds:.2f} ms")
+
 def dd(*args) -> None:
     print(args)
     exit(1)
