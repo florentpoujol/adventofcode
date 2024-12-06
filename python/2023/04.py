@@ -17,7 +17,7 @@ for i, line in enumerate(lines):
     lines[i] = line.replace("\n", "")
 
 # --------------------------------------------------
-# part 1
+# init
 
 utils.startTimer()
 
