@@ -36,7 +36,7 @@ let i = 0
 export function dump(...data)
 {
 	i++
-	console.log('dump ' + i, ...data)
+	console.log('dump ' + i + ':', ...data)
 }
 
 export function dd(...data)

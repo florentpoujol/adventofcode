@@ -3,7 +3,7 @@ import * as utils from "./utils.js"
 import {input} from "./inputs/08.js"
 let inputStr = input
 
-// Day 2024.06
+// Day 2024.08
 
 // test input
 // inputStr =
