@@ -128,7 +128,7 @@ for (let i = Object.keys(files).length - 1; i >= 0; i--) {
     let freeSpaceStartIndex = -1
     // find a free space that fits this file
     for (let j = 0; j < diskForPart2.length; j++) {
-        if (j >= fileData.start) { // we reached the index o the file we want to move, so give up
+        if (j > fileData.start) { // we go over the index of the file we want to move, so give up
             freeSpaceStartIndex = -1
             break
         }
@@ -177,7 +177,7 @@ for (let i = Object.keys(files).length - 1; i >= 0; i--) {
     freeSpaceStartIndex = -1
 }
 
-utils.dump(diskForPart2.join(' '))
+// utils.dump(diskForPart2.join(' '))
 
 checksum = 0
 for (let i = 0; i < diskForPart2.length; i++) {
@@ -187,5 +187,4 @@ for (let i = 0; i < diskForPart2.length; i++) {
     }
 }
 
-utils.endPart('2', checksum) //
-// 6363268359248 too high
+utils.endPart('2', checksum) // 6363268339304
